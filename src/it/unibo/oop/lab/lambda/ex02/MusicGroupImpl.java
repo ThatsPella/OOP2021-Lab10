@@ -31,42 +31,42 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> orderedSongNames() {
-        return null;
+        return songs.stream().sorted((s1, s2) -> s1.getSongName().compareTo(s2.getSongName())).map(s -> s.getSongName());
     }
 
     @Override
     public Stream<String> albumNames() {
-        return null;
+        return albums.keySet().stream();
     }
 
     @Override
     public Stream<String> albumInYear(final int year) {
-        return null;
+        return albums.keySet().stream().filter(a -> albums.get(a) == year);
     }
 
     @Override
     public int countSongs(final String albumName) {
-        return -1;
+        return (int) songs.stream().filter(s -> s.getAlbumName().isPresent()).filter(s -> s.getAlbumName().get().compareTo(albumName) == 0).count();
     }
 
     @Override
     public int countSongsInNoAlbum() {
-        return -1;
+        return (int) songs.stream().filter(s -> s.getAlbumName().isEmpty()).count();
     }
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
-        return null;
+        return OptionalDouble.of(songs.stream().filter(s -> s.getAlbumName().isPresent()).filter(s -> s.getAlbumName().get().compareTo(albumName) == 0).mapToDouble(s -> s.getDuration()).sum() / songs.stream().filter(s -> s.getAlbumName().isPresent()).filter(s -> s.getAlbumName().get().compareTo(albumName) == 0).count());
     }
 
     @Override
     public Optional<String> longestSong() {
-        return null;
+        return Optional.of(songs.stream().sorted((s1, s2) -> Double.compare(s2.getDuration(), s1.getDuration())).findFirst().get().getSongName());
     }
-
+//
     @Override
     public Optional<String> longestAlbum() {
-        return null;
+        return Optional.of(albums.keySet().stream().sorted((a1, a2) -> Double.compare(songs.stream().filter(s -> s.getAlbumName().isPresent()).filter(s -> s.getAlbumName().get().compareTo(a2) == 0).mapToDouble(s -> s.getDuration()).sum(), songs.stream().filter(s -> s.getAlbumName().isPresent()).filter(s -> s.getAlbumName().get().compareTo(a1) == 0).mapToDouble(s -> s.getDuration()).sum())).findFirst().get());
     }
 
     private static final class Song {
